@@ -1,4 +1,4 @@
-# ĐỒ ÁN CUỐI KÌ - PHÁT TRIỂN ỨNG DỤNG WEB VỚI NODEJS
+# PHÁT TRIỂN ỨNG DỤNG WEB VỚI NODEJS
 
 ## Link Video demo:
 -   Youtube: https://youtu.be/9d54NP0HosY
