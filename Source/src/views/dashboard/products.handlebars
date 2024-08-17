@@ -1,0 +1,307 @@
+<div class="container-fluid">
+
+    <div class="row">
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Tổng số sản phẩm</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{products.length}}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <a href="/products/add" class="btn btn-success mb-4">Thêm sản phẩm</a>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Danh Sách sản phẩm</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Mã sản phẩm</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Loại</th>
+                            <th>Giá</th>
+                            <th style="width: 14%;">Chỉnh sửa</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {{#each products}}
+                        <tr>
+                            <td><img src={{imgSrc}} alt="" style="width: 20vh;"></td>
+                            <td>{{name}}</td>
+                            <td>{{cate}}</td>
+                            <td>{{priceFormat price}}</td>
+                            <td>
+                                <button type="button" class="btn btn-warning edit" value={{objToJsonEncode this}}
+                                    data-bs-toggle="modal" data-bs-target="#editModal">
+                                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                                </button>
+                                <button type="button" class="btn btn-danger del" value={{objToJsonEncode this}}
+                                    data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                    <i class="fa fa-trash" aria-hidden="true"></i>
+                                </button>
+                                <button type="button" class="btn btn-secondary info" value={{objToJsonEncode this}}
+                                    data-bs-toggle="modal" data-bs-target="#infoModal">
+                                    <i class="fa fa-info" aria-hidden="true"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+{{!-- Edit product --}}
+<div class="modal" id="editModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chỉnh sửa sản phẩm</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <input type="text" style="display: none;" class="id-product" name="productID">
+
+                <div class="form-outline form-white mb-4">
+                    <label class="col-form-lable" for="nameItem">Tên sản phẩm:</label>
+                    <input type="text" class="nameItem form-control" name="nameItem" placeholder="Nhập tên sản phẩm"
+                        required />
+                </div>
+
+                <div class="form-outline form-white mb-4">
+                    <label class="col-form-lable" for="priceItem">Giá sản phẩm:</label>
+                    <input type="text" class="priceItem form-control" name="priceItem" placeholder="Nhập giá"
+                        required />
+                </div>
+
+                {{!-- <div class="form-outline form-white mb-4">
+                    <label class="col-form-lable" for="imgItem">Chọn ảnh:</label>
+                    <input type="file" class="imgItem form-control" name="imgItem" placeholder="Chọn ảnh" />
+                </div> --}}
+
+                <div class="form-outline form-white mb-4">
+                    <label class="col-form-lable" for="priceItem">Loại sản phẩm:</label>
+                    <select name="typeProduct" id="typeProduct" class="form-select">
+                        <option value="Điện thoại">Điện thoại</option>
+                        <option value="Laptop">Máy tính</option>
+                        <option value="Phụ kiện">Phụ kiện</option>
+                        <option value="Tai nghe">Tai nghe</option>
+                        <option value="Loa">Loa</option>
+                        <option value="Đồng Hồ">Đồng hồ</option>
+                    </select>
+                </div>
+
+                <div class="form-outline form-white mb-4">
+                    <label class="col-form-lable" for="descItem">Mô tả sản phẩm:</label>
+                    <textarea class="descItem form-control" rows="6" name="descItem"
+                        placeholder="Để trống nếu giữ nguyên nội dung"></textarea>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Huỷ</button>
+                <button type="submit" class="btn btn-primary btnActionUpdate" data-bs-dismiss="modal">Lưu</button>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+
+{{!-- Dialog delete --}}
+<div class="modal" id="deleteModal" tabindex="-2">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Bạn có chắc muốn xoá sản phẩm:</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <input type="text" style="display: none;" class="id-product" name="productID">
+                <b class="name-product"></b>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-danger btn-sm btn_takeActionDel my-3"
+                    data-bs-dismiss="modal">Xoá</button>
+                <button type="button" class="btn btn-secondary btn-sm btn_closeDel my-3"
+                    data-bs-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{{!-- Dialog info --}}
+<div class="modal" id="infoModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Thông tin sản phẩm</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form id="form-product--edit" method="post">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-6 col-md-7 col-lg-8">
+                            <p class="card-text"><b>Tên sản phẩm:</b>
+                            <div class="name"></div>
+                            </p>
+                        </div>
+                        <div class="col-sm-6 col-md-5 col-lg-4">
+                            <img class="imgSrc" src="" alt="" style="width: 100%;">
+                        </div>
+                        <p class="card-text"><b>ID sản phẩm:</b>
+                        <div class="id"></div>
+                        </p>
+                        <p class="card-text"><b>Loại:</b>
+                        <div class="cate"></div>
+                        </p>
+                        <p class="card-text"><b>Giá:</b>
+                        <div class="price"></div>
+                        </p>
+                        <p class="card-text"><b>Thông tin:</b>
+                        <div class="desc"></div>
+                        </p>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Huỷ</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Edit
+    $('button.edit').click(function () {
+        let item = $(this).val()
+        item = JSON.parse(decodeURIComponent(item));
+
+        $('.id-product').val(item._id)
+        $('.nameItem').val(item.name)
+        $('.priceItem').val(item.price)
+        $('.descItem').val(item.desc)
+        let value = ''
+        switch (item.cate) {
+            case 'Điện thoại':
+                value = 'Điện thoại';
+                break;
+            case 'Laptop':
+                value = 'Laptop';
+                break;
+            case 'Loa':
+                value = 'Loa'
+                break
+            case 'Đồng hồ':
+                value = 'Đồng Hồ'
+                break
+            case 'Tai nghe':
+                value = 'Tai nghe'
+                break
+            default:
+                value = 'Phụ kiện'
+                break
+        }
+        $('select').val(value)
+
+        $('.btnActionUpdate').click(function() {
+            fetch('/products', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    productID: item._id,
+                    name: $('.nameItem').val(),
+                    price: $('.priceItem').val(),
+                    desc: $('.descItem').val(),
+                    cate: $('#typeProduct').val()
+                })
+            })
+            .then(res => res.json())
+            .then(res => {
+                if (res.result) {
+                    alert('Cập nhật sản phẩm thành công')
+                    location.reload()
+                }
+                else {
+                    alert('Không thể cập nhật sản phẩm. Vui lòng thử lại')
+                }
+            })
+        })
+    })
+
+    // Delete
+    $('button.del').click(function () {
+        let item = $(this).val()
+        item = JSON.parse(decodeURIComponent(item));
+        $('.id-product').val(item._id)
+        $('.name-product').text(item.name)
+
+        $('.btn_takeActionDel').click(function () {
+
+            fetch('/products', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    productID: item._id
+                })
+            })
+                .then(res => res.json())
+                .then(res => {
+                    console.log(res)
+                    if (res.isDeleted) {
+                        location.reload()
+                    }
+                    else {
+                        alert('Không thể xoá sản phẩm. Vui lòng thử lại')
+                    }
+                })
+        })
+    })
+
+    // Info
+    $('button.info').click(function () {
+        let item = $(this).val()
+        item = JSON.parse(decodeURIComponent(item));
+
+        $('.imgSrc').attr('src', item.imgSrc)
+        $('.name').text(item.name)
+        $('.price').text(item.price)
+        $('.desc').text(item.desc)
+        $('.cate').text(item.cate)
+        $('.id').text(item._id)
+    })
+</script>

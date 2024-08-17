@@ -1,0 +1,251 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+<script src="https://unpkg.com/easyinvoice/dist/easyinvoice.min.js"></script>
+
+<script>
+      function formatMoney() {
+        const moneyElements = document.querySelectorAll('.money');
+            moneyElements.forEach(element => {
+            const text = element.textContent;
+            const formattedText = text.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            element.textContent = formattedText;
+        });
+    }
+  let detail_bill={
+        phone:0,
+        name_customer: '',
+        totalAmount:{{bill.total}},
+        amountPaid:0,
+        refundAmount:0,
+        numberOfproduct:0,
+        products:[],
+  }
+  {{#each bill.items}}
+  detail_bill.numberOfproduct+={{quantity}};
+  detail_bill.products.push({ id:`{{id}}`, name:`{{name}}`, price:{{price}}, quantity:{{quantity}},imgSrc:`{{imgSrc}}`, total:{{total}},});
+  {{/each}}
+  function save_customer(event){
+    event.preventDefault();
+    name_customer=document.getElementById('name').value
+    address_customer=document.getElementById('address').value
+    fetch('/paying/enter-name-address', {
+              method: 'post',
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({name:name_customer,address:address_customer})
+          })
+          .then(response => response.json())
+          .then(data => {
+            detail_bill.name_customer=data.name;
+            let results = document.getElementById('customers');
+            results.innerHTML = '';
+            results.innerHTML=`
+                        <div class="card" class="w-100">
+                            <img class="card-img-top" src="https://www.w3schools.com/bootstrap4/img_avatar1.png"
+                                alt="Card image">
+                            <div class="card-body">
+                                <h4 class="card-title text-primary">${data.name}</h4>
+                                <p class="card-text">Số điện thoại: <strong>${data.phone}</strong></p>
+                                <p class="card-text">Địa chỉ: <strong>${data.address}</strong></p>
+                            </div>
+                        </div>
+                  `
+             document.getElementById('formMoneyOfCustomer').style.display='block';
+
+          })
+
+  }
+  function ons(event){
+     event.preventDefault();
+     let phone=document.getElementById('phone').value;
+     if(phone==''){
+      const flashMessage = document.getElementById('flash-message');
+              flashMessage.innerHTML="Bạn chưa nhập số điện thoại"
+              flashMessage.style.display='block';
+              const duration = 3000; 
+              setTimeout(() => {
+                flashMessage.style.display = 'none';
+              }, duration);
+      return
+     }
+     detail_bill.phone=phone;
+    fetch('/paying/checkNp', {
+              method: 'post',
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ phone: phone })
+          })
+          .then(response => response.json())
+          .then(data => {
+              let results = document.getElementById('customers');
+              results.innerHTML = '';
+              if(data.message){
+                  results.innerHTML=`
+                  <form onsubmit="save_customer(event)">
+                    <div class="form-group">
+                      <label for="name">Họ và Tên</label>
+                      <input type="text" class="form-control" id="name" placeholder="Nhập tên khách hàng">
+                    </div>
+                    <div class="form-group">
+                      <label for="address">Địa chỉ</label>
+                      <input type="text" class="form-control" id="address" placeholder="Nhập địa chỉ khách hàng">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Lưu</button>
+                  </form>
+                  `
+              }else{
+                  detail_bill.name_customer=data.name;
+                  results.innerHTML=`
+                        <div class="card" class="w-100">
+                            <img class="card-img-top" src="https://www.w3schools.com/bootstrap4/img_avatar1.png"
+                                alt="Card image">
+                            <div class="card-body">
+                                <h4 class="card-title text-primary">${data.name}</h4>
+                                <p class="card-text">Số điện thoại: <strong>${data.phone}</strong></p>
+                                <p class="card-text">Địa chỉ: <strong>${data.address}</strong></p>
+                                <a href="/view-customer/purchase-history/${data.phone}">Xem lịch sử mua hàng</a>
+                            </div>
+                        </div>
+                  `
+                   document.getElementById('formMoneyOfCustomer').style.display='block';
+              }
+          })
+          .catch(error => console.error('Error:', error));
+  }
+  function excess_money(event){
+    event.preventDefault()
+    let moneyOfCustomer=document.getElementById('moneyOfCustomer').value.replace(/[^0-9]/g, '');
+    detail_bill.amountPaid=moneyOfCustomer;
+    let total_money={{bill.total}}
+    fetch('/paying/check-money', {
+              method: 'post',
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ moneyOfCustomer: moneyOfCustomer ,total_money:total_money})
+          })
+          .then(response => response.json())
+          .then(data=>{
+            if(data.error){
+              const flashMessage = document.getElementById('flash-message');
+              flashMessage.innerHTML=data.error
+              flashMessage.style.display='block';
+              document.getElementById('moneyOfCustomer').value=''
+              
+              const duration = 5000; 
+              setTimeout(() => {
+                flashMessage.style.display = 'none';
+              }, duration);
+            }else{
+              document.getElementById('excess_money').innerHTML=`Tiền thừa: <i class="money">${data.excess_money}</i> VNĐ`
+              detail_bill.refundAmount=data.excess_money;
+              formatMoney();
+              var printButton = document.getElementById("print");
+              printButton.removeAttribute("disabled");
+            }
+          })
+  }
+  function formatNumber(event) {
+    var inputText = event.target.value;
+
+    var numericValue = inputText.replace(/\D/g, '');
+
+    var formattedValue = numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
+    event.target.value = formattedValue;
+}
+
+function saveBills(){
+   fetch('/paying/save-order', {
+              method: 'post',
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ detailBill: detail_bill })
+          })
+          .then(response => response.json())
+          .then(data=>{
+            const flashMessage2 = document.getElementById('flash-message-2');
+              flashMessage2.innerHTML=data.message
+              flashMessage2.style.display='block';
+              const duration = 2000; 
+              easyinvoice.createInvoice(data.pdf, function (result) {
+                        easyinvoice.download('Invoice.pdf', result.pdf);
+                    });
+              setTimeout(() => {
+                flashMessage2.style.display = 'none';
+              }, duration);
+      })
+}
+</script>
+ <div class="alert alert-danger" id="flash-message" style="display: none;position: fixed;top: 50px;right: 10px;"></div>
+ <div class="alert alert-success" id="flash-message-2" style="display: none;position: fixed;top: 50px;right: 10px;"></div>
+<div style="position: block;">
+  <a href="./add-order"><i class="fa-solid fa-right-from-bracket" style="position: absolute; top: 95px; right: 5px; font-size: 38px; color: rgba(var(--bs-link-color-rgb);">
+  </i></a>
+  </div>
+<div class="container-fluid">  
+  <div class="row">
+    <div class="col-md-4 border" id="customers">
+       <h1>Enter Phone Number</h1>
+        <form method="post" onsubmit="ons(event)">
+              <div class="form-outline mb-4">
+                <label class="form-label" for="phone">Number Phone</label>
+                <input type="text" id="phone" class="form-control" name="phone" />
+              </div>
+            <button type="submit" class="btn btn-primary btn-block" >Kiểm tra</button>
+        </form>
+    </div>
+    <div class="col-md-8 border">
+      <table class="table table-hover table-image">
+        <thead>
+            <tr>
+                <th scope="col">Ảnh </th>
+                <th scope="col">Tên sản phẩm</th>
+                <th scope="col">Giá sản phẩm</th>
+                <th scope="col">Số lượng</th>
+                <th scope="col">Tổng tiền sản phẩm</th>
+            </tr>
+        </thead>
+        <tbody id="searchResults">
+        {{#each bill.items}}
+        <tr class="align-middle" >
+                    <td style="width:8%;"><img src={{imgSrc}} class="img-thumbnail rounded" alt=""></td>
+                    <th><a href='../products/{{this.id}}' style="text-decoration: none;">{{name}} </a></th>
+                    <td><i class="money">{{price}}</i> VNĐ</td>
+                    <td scope="row" style="width: 15%; text-align:center; ">{{quantity}}</td>
+                    <td scope="row" style="width: 15%; text-align:center; ">
+                       <i class="money">{{total}}</i> VNĐ
+                    </td>
+                </tr>
+      {{/each}}
+        </tbody>
+    </table>
+     <b>Tổng tiền hóa đơn: <i class="money">{{bill.total}}</i> VNĐ</b>
+     
+     <form style="display: none;" id="formMoneyOfCustomer" onsubmit="excess_money(event)">
+              <div class="form-outline mb-4">
+                <label class="form-label" for="moneyOfCustomer"></label>
+                <input type="text" id="moneyOfCustomer" class="form-control" name="moneyOfCustomer" placeholder="Nhập tiền khách hàng đưa..." oninput="formatNumber(event)"/>
+              </div>
+            <button type="submit" class="btn btn-primary btn-block">Enter</button>
+      </form>
+      <b id="excess_money"></b>
+    </div>
+  </div>
+</div>
+<div style="position: relative;">
+  <button id="print" type="button" class="btn btn-primary" style="position:absolute;bottom: 2px;right: 10px;" onclick="saveBills()" disabled>In hóa đơn</button>
+</div>
+<script>
+        function formatMoney() {
+        const moneyElements = document.querySelectorAll('.money');
+            moneyElements.forEach(element => {
+            const text = element.textContent;
+            const formattedText = text.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            element.textContent = formattedText;
+        });
+    }
+    formatMoney();
+</script>

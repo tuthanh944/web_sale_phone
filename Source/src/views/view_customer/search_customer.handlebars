@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Customers</title>
+</head>
+<body>
+    <h2>Search Customers</h2>
+    <div class="container">
+    <form id="searchForm" onsubmit="searchCustomers(event)">
+        <div class="mb-3">
+            <label class="form-label"></label>
+            <input type="text" class="form-control" placeholder="Nhập tên hoặc số điện thoại khách hàng..." id="searchTerm" required>
+        </div>
+        <button type="submit" class="btn btn-success">Tìm</button>
+    </form>
+    <table class="table table-hover table-image">
+        <thead>
+            <tr>
+                <th scope="col"></th>
+                <th scope="col">Tên khách hàng</th>
+                <th scope="col">Số điện thoại</th>
+                <th scope="col">Địa chỉ</th>
+            </tr>
+        </thead>
+        <tbody id="searchResults">
+        </tbody>
+    </table>
+    </div>
+</div>
+    <script>
+        const input = document.getElementById('searchTerm');
+        input.addEventListener('input', function() {
+            const searchResults = document.getElementById('searchResults');
+            searchResults.innerHTML = '';
+            const searchTerm = input.value;
+                fetch('/view-customer/search-customer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ searchTerm: searchTerm })
+            })
+            .then(response => response.json())
+            .then(data => {
+                    const searchResults = document.getElementById('searchResults');
+                    searchResults.innerHTML = '';
+                    if(data.message){
+                       searchResults.innerText=data.message
+                    }else{
+                        data.forEach(customer => {
+                           let Results=`<tr class="align-middle" >
+                                <td style="width:8%;"><img src="https://www.w3schools.com/bootstrap4/img_avatar1.png" class="img-thumbnail rounded" alt=""></td>
+                                <th scope="row" style="width: 15%; text-align:center; ">${customer.name}</th>
+                                <td style="text-decoration: none;">${customer.phone} </a></td>
+                                <td>${customer.address}</td>
+                                <td>
+                                    <a href="/view-customer/purchase-history/${customer.phone}">Xem lịch sử mua hàng</a>
+                                </td>
+                            </tr>`
+                           searchResults.insertAdjacentHTML('beforeend', Results);
+                        });
+                    }
+                })
+
+            .catch(error => console.error('Error:', error));
+        });
+        function searchCustomers(event) {
+            event.preventDefault();
+            const searchTerm = document.getElementById('searchTerm').value;
+            const searchResults = document.getElementById('searchResults');
+            searchResults.innerHTML = '';
+            fetch('/view-customer/search-customer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ searchTerm: searchTerm })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const searchResults = document.getElementById('searchResults');
+                searchResults.innerHTML = '';
+                if(data.message){
+                       searchResults.innerText=data.message
+                    }else{
+                            data.forEach(customer => {
+                              let Results=`<tr class="align-middle" >
+                                <td style="width:8%;"><img src="https://www.w3schools.com/bootstrap4/img_avatar1.png" class="img-thumbnail rounded" alt=""></td>
+                                <th scope="row" style="width: 15%; text-align:center">${customer.name}</th>
+                                <td>${customer.phone}</td>
+                                <td>${customer.address}</td>
+                                <td>
+                                    <a href="/view-customer/purchase-history/${customer.phone}">Xem lịch sử mua hàng</a>
+                                </td>
+                            </tr>`
+                           searchResults.insertAdjacentHTML('beforeend', Results);
+                        });
+                    }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>

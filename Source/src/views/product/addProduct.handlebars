@@ -1,0 +1,23 @@
+<div class="container rounded-3 border border-light p-5 mt-5 shadow-lg p-3 mb-5 bg-body">
+    <p class="btn btn-secondary bg-primary" onclick="history.back()" style="cursor: pointer;">Back</p>
+    <h3 class="text-success mb-4">Thêm Sản Phẩm Mới</h3>
+    <form method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label class="form-label">Tên sản phẩm</label>
+            <input type="text" class="form-control" placeholder="Nhập tên sản phẩm" name="nameItem" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Giá sản phẩm</label>
+            <input type="number" class="form-control" placeholder="Nhập giá bán" name="priceItem" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Ảnh sản phẩm</label>
+            <input class="form-control" type="file" id="formFile" name="imgItem" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Mô tả</label>
+            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name="descItem" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-success">Thêm Sản Phẩm</button>
+    </form>
+</div>

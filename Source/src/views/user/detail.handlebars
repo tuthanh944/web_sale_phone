@@ -1,0 +1,23 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-sm-6 col-md-5 col-lg-4">
+      <div class="card" class="w-100">
+        {{#with user}}
+        <img class="card-img-top" src="{{avatar}}" alt="Card image" />
+        <div class="card-body">
+          <h4 class="card-title text-primary">{{fullName}}</h4>
+          <p class="card-text">ID: <strong>{{_id}}</strong></p>
+          <p class="card-text">Email: <strong>{{email}}</strong></p>
+          <p class="card-text">Status: <strong>{{status}}</strong></p>
+        </div>
+        {{/with}}
+      </div>
+
+      
+
+      <p class="mt-3">
+        <a href="/dashboard/users" class="text-decoration-none text-primary">Quay lại</a>
+      </p>
+    </div>
+  </div>
+</div>

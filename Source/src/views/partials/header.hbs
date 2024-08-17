@@ -1,0 +1,45 @@
+<nav class="navbar navbar-expand-md bg-dark sticky-top border-bottom" data-bs-theme="dark">
+  <div class="container">
+    <a class="navbar-brand d-md-none" href="#">
+      <svg class="bi" width="24" height="24">
+        <use xlink:href="#aperture" />
+      </svg>
+      IfoneX
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvas"
+      aria-controls="#offcanvas" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="#offcanvas" aria-labelledby="#offcanvasLabel">
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="#offcanvasLabel">IfoneX</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      </div>
+      <div class="offcanvas-body">
+        <ul class="navbar-nav flex-grow-1 justify-content-between">
+          <li class="nav-item"><a class="nav-link" href="/">
+              <i class="fa fa-shrimp"></i>
+              IFoneX</a></li>
+          <li class="nav-item"><a class="nav-link" href="/products">Sản phẩm</a></li>
+          <li class="nav-item"><a class="nav-link" href="/paying/add-order">Tạo hoá đơn</a></li>
+          <li class="nav-item"><a class="nav-link" href="/dashboard">Quản lý</a></li>
+          <li class="nav-item">
+            <div class="dropdown">
+              <a class="btn btn-secondary dropdown-toggle text-truncate" href="#" role="button" id="dropdownMenuLink"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                Profile
+              </a>
+
+              <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <li><a class="dropdown-item" href="/logout">Logout</a></li>
+                <li><a class="dropdown-item" href="/users/view-profile">View Profile</a></li>
+                <li><a class="dropdown-item" href="/accounts/change-password-not-first-time">Change Password</a></li>
+              </ul>
+            </div>
+
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>

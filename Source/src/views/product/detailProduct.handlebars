@@ -1,0 +1,21 @@
+    <br>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-4 ">
+                <img class="card-img-top" alt="Card-image" src={{product.imgSrc}} style="width: 100%">
+            </div>
+            <div class="col-8 col-md-5 col-lg-4">
+                <div class="card" class="w-100">
+                    <div class="card-body">
+                        <h3 class="card-title">Thông sản phẩm:</h3>
+                <p class="card-text"><b>ID sản phẩm:</b> {{product._id}}</p>
+                <p class="card-text"><b>Tên sản phẩm:</b> {{product.name}}</p>
+                <p class="card-text"><b>Giá:</b> {{product.price}}</p>
+                <p class="card-text"><b>Thông tin:</b> {{product.desc}}</p>
+                    </div>
+                </div>
+                <p class="mt-3"><a href="#" onclick="history.back()" class="btn btn-outline-secondary">Quay lại</a></p>
+            </div>
+        </div>
+    </div>
+

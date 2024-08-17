@@ -1,0 +1,88 @@
+<div class="container my-3">
+  <h4 class="my-2 text-primary text-center text-uppercase">Danh sách người dùng</h4>
+  <a class="btn btn-success btn-sm my-4" href="/accounts/create">Thêm người dùng</a>
+  <p>Chọn một người dùng để xem chi tiết</p>
+  {{#if flash}}
+  <div class="alert alert-{{flash.type}} alert-dismissible fade show" role="alert">
+    {{flash.message}}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  {{/if}}
+  <table class="table table-striped border" id="dataTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Avatar</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Status</th>
+        <th class="text-center">Thao tác</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each users}}
+      <tr>
+        <td>{{this._id}}</td>
+        <td>
+          <img style="width: 50px" src="{{this.avatar}}" alt="">
+        </td>
+        <td><a href="/users/{{this._id}}">{{this.fullName}}</a></td>
+        <td>{{this.email}}</td>
+        <td>{{this.status}}</td>
+        <td class="text-center">
+          {{#ifeq this.isConfirmEmail false}}
+          <a data-user-id={{this._id}} class="btn-resend-login-mail btn btn-sm btn-outline-success">Resend login
+            email</a>
+          {{/ifeq}}
+          <a data-user-id={{this._id}} class="btn-change-status btn btn-sm btn-outline-danger">Lock</a>
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</div>
+
+<script>
+  $(".btn-resend-login-mail").click((evt) => {
+    fetch("/users/resend-login-mail", {
+      method: "put",
+      body: JSON.stringify({
+        id: evt.target.dataset.userId
+      }), headers: {
+        "Content-type": "application/json"
+      }
+    }).then(res => res.json())
+      .then(json => {
+        if (json.status === "success") {
+          console.log(json)
+        }
+        // need toastify for notification
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  })
+
+  $(".btn-change-status").click((evt) => {
+    fetch("/users/change-status", {
+      method: "put",
+      body: JSON.stringify({
+        id: evt.target.dataset.userId
+      }), headers: {
+        "Content-type": "application/json"
+      }
+    }).then(res => res.json())
+      .then(json => {
+        if (json.status === "success") {
+          let tr = $(evt.target).closest("tr")
+          let tds = tr.find("td")
+          tds[4].innerHTML = tds[4].innerHTML == "inactive" ? "active" : "inactive"
+          $(evt.target).text($(evt.target).text() == "Lock" ? "Unlock" : "Lock")
+          // need toastify for notification
+        }
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  })
+</script>

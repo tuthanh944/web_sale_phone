@@ -1,0 +1,36 @@
+<link href="https://fonts.googleapis.com/css?family=Encode+Sans+Semi+Condensed:100,200,300,400" rel="stylesheet">
+<link rel="stylesheet" href="css/500.css">
+<body class="loading">
+  <h1>500</h1>
+  <h2>Unexpected Error <b>: {{errorMsg}}</b></h2>
+  <div class="gears">
+    <div class="gear one">
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+    </div>
+    <div class="gear two">
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+    </div>
+    <div class="gear three">
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+    </div>
+  </div>
+  <div style="display:flex;justify-content:center;">
+    <a class='btn btn-outline-light' onclick= 'history.back()' style="margin-right: 20px;">GO BACK</a>
+    <a class='btn btn-outline-light' href="/" style="margin-left: 20px;">GO HOME</a>
+ </div>
+  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+  <script>
+    $(function() {
+        setTimeout(function(){
+          $('body').removeClass('loading');
+        }, 1000);
+      });
+      
+  </script>
+</body>

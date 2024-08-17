@@ -1,0 +1,25 @@
+.File-not-found-bg {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    top: 0;
+    right: 0;
+    background-image: url('/images/404-Space.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+
+    .file-not-found-content {
+        position: absolute;
+        top: 60%;
+        left: 50%;
+        transform: translateX(-50%);
+        text-align: center;
+        color: #fff;
+
+        h1,
+        h3 {
+            font-weight: 700;
+        }
+    }
+}

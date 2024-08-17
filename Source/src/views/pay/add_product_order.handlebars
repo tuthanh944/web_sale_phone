@@ -1,0 +1,261 @@
+ <style>
+    th{
+        padding: 10px;
+    }
+    td{
+        padding: 10px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 300px;
+    }
+    
+ </style>
+ <div class="">
+    <form method="post" onsubmit="searchCustomers(event)">
+        <h4 class="my-3 text-primary text-center text-uppercase">Danh sách đơn hàng </h4>
+
+        <div class="mb-3">
+            <label class="form-label">Tìm sản phẩm</label>
+
+            <input type="text" class="form-control" placeholder="Nhập tên hoặc mã vạch sản phẩm" id="searchTerm" required>
+        </div>
+        <button type="submit" class="btn btn-success">Tìm</button>
+        <button class="btn btn-danger" onclick="processPayment()">Thanh toán</button>
+        
+    </form>
+    <table class="table table-hover table-image">
+        <thead>
+            <tr>
+                <th scope="col">Ảnh </th>
+                <th scope="col">Mã sản phẩm</th>
+                <th scope="col">Tên sản phẩm</th>
+                <th scope="col">Giá</th>
+            </tr>
+        </thead>
+        <tbody id="searchResults">
+            <!-- Load các product -->
+            {{#each product}}
+                <tr class="align-middle" >
+                    <td style="width:8%;"><img src={{imgSrc}} class="img-thumbnail rounded" alt=""></td>
+                    <th scope="row" style="width: 15%; text-align:center; ">{{_id}}</th>
+                    <td><a href='../products/{{this._id}}' style="text-decoration: none;">{{this.name}} </a></td>
+                    <td><i class="money">{{this.price}}</i> VNĐ</td>
+                    <td>
+                        <button class="btn btn-danger mb-3 add" data-name="{{this.name}}" data-price="{{this.price}}" data-id="{{_id}}">Thêm vào hóa đơn</button>
+                    </td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+      <div id="product-info" style="position: fixed;bottom: 0;right: 0;background-color: #f1f1f1;padding: 15px;border-top-left-radius: 10px;max-height: 280px;overflow-y: auto;">
+        <h3>Hóa Đơn</h3>
+        <table id="product-list">
+            <thead>
+                <tr>
+                <th>Tên Sản Phẩm</th>
+                <th>Giá Sản Phẩm</th>
+                <th>Số Lượng</th>
+                <th>Tổng Giá</th>
+                </tr>
+                <tr>
+                    <p></p>
+                    <input type="number" class="quantity-input" value="1" min="1" style="display: none;">
+                    <p></p>
+                    <p></p>
+                </tr>
+            </thead>
+        </table>
+        <h6><p id="total">Tổng tiền: 0 VNĐ</p></h6>
+    </div>
+</div>
+<script>
+        function formatMoney() {
+            const moneyElements = document.querySelectorAll('.money');
+                moneyElements.forEach(element => {
+                const text = element.textContent;
+                const formattedText = text.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                element.textContent = formattedText;
+            });
+        }
+        formatMoney();
+        function searchCustomers(event) {
+            event.preventDefault();
+            let searchTerm = document.getElementById('searchTerm').value;
+            const searchResults = document.getElementById('searchResults');
+            fetch('/paying/add-order', {
+                method: 'post',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ searchTerm: searchTerm })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const searchResults = document.getElementById('searchResults');
+                searchResults.innerHTML = '';
+                if(data.message){
+                        searchResults.innerText=data.message
+                    }else{
+                        data.forEach(product => {
+                            let Results=`<tr class="align-middle" >
+                                <td style="width:8%;"><img src=${product.imgSrc} class="img-thumbnail rounded" alt=""></td>
+                                <th scope="row" style="width: 15%; text-align:center; ">${product._id}</th>
+                                <td><a href='../products/${product._id}' style="text-decoration: none;">${product.name} </a></td>
+                                <td><i class="money">${product.price}</i> VND</td>
+                                <td>
+                                    <button class="btn btn-danger mb-3 add" data-name=${encodeURIComponent(product.name)} data-price=${product.price} data-id=${product._id}>Thêm vào hóa đơn</button>
+                                </td>
+                            </tr>`
+                           searchResults.insertAdjacentHTML('beforeend', Results);
+                        });
+                        if (data.length === 1) {
+                            const myButton = document.querySelector('.add');
+                            myButton.click();
+                            document.getElementById('searchTerm').value=''
+                        }
+                        formatMoney();
+                    }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+        let input = document.getElementById('searchTerm');
+        input.addEventListener('input', function() {
+            const searchResults = document.getElementById('searchResults');
+            searchResults.innerHTML = '';
+            let searchTerm = input.value;
+             setTimeout(() => {
+                fetch('/paying/add-order', {
+                method: 'post',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ searchTerm: searchTerm })
+            })
+            .then(response => response.json())
+            .then(data => {
+                    const searchResults = document.getElementById('searchResults');
+                    searchResults.innerHTML = '';
+                    if(data.message){
+                        searchResults.innerText=data.message
+                    }else{
+                         data.forEach(product => {
+                            let Results=`<tr class="align-middle" >
+                                <td style="width:8%;"><img src=${product.imgSrc} class="img-thumbnail rounded" alt=""></td>
+                                <th scope="row" style="width: 15%; text-align:center; ">${product._id}</th>
+                                <td><a href='products/${product._id}' style="text-decoration: none;">${product.name} </a></td>
+                                <td><i class="money">${product.price}</i> VND</td>
+                                <td>
+                                    <button class="btn btn-danger mb-3 add" data-name=${encodeURIComponent(product.name)} data-price=${product.price} data-id=${product._id}>Thêm vào hóa đơn</button>
+                                </td>
+                            </tr>`
+                           searchResults.insertAdjacentHTML('beforeend', Results);
+                        });
+                          if (data.length === 1) {
+                            const myButton = document.querySelector('.add');
+                            myButton.click()
+                            document.getElementById('searchTerm').value=''
+                        }
+                        formatMoney();
+                    }
+                })
+
+            .catch(error => console.error('Error:', error));
+        }, 500);
+    });
+    const bill = {
+    items: [], 
+    total: 0,
+    };
+    function updateTotal() {
+        bill.total = bill.items.reduce((acc, item) => acc + item.total, 0);
+    }
+    function insert_bill(id, name, price, quantity) {
+        const existingItemIndex = bill.items.findIndex(item => item.id === id);
+        let imgSrc=''
+        if (existingItemIndex !== -1) {
+        bill.items[existingItemIndex].quantity += quantity;
+        bill.items[existingItemIndex].total = bill.items[existingItemIndex].quantity * price;
+        } else {
+        bill.items.push({ id, name, price, quantity,imgSrc, total: price * quantity });
+        }
+        updateTotal();
+    }
+  function changeQuantity(id, newQuantity) {
+    const item = bill.items.find(item => item.id === id);
+
+    if (item) {
+      item.quantity = newQuantity;
+      item.total = item.quantity * item.price;
+      updateTotal();
+    }
+    displayProductsInBill();
+  }
+  function deleteProduct(id) {
+  const index = bill.items.findIndex(item => item.id === id);
+
+  if (index !== -1) {
+    bill.items.splice(index, 1);
+    updateTotal();
+    displayProductsInBill(); 
+  }
+}
+function displayProductInBill(id, productName, productPrice, quantity, total) {
+  const productList = document.getElementById("product-list");
+  const newRow = productList.insertRow();
+  const cellName = newRow.insertCell(0);
+  const cellPrice = newRow.insertCell(1);
+  const cellQuantity = newRow.insertCell(2);
+  const cellTotal = newRow.insertCell(3);
+  const cellDelete=newRow.insertCell(4);
+
+  cellName.textContent = productName;
+  cellQuantity.innerHTML = `<input type="number" class="quantity-input" data-id="${id}" value="${quantity}" min="1">`;
+  cellPrice.innerHTML = `<p><i class="money">${productPrice}</i> VNĐ</p>`;
+  cellTotal.innerHTML = `<p><i class="money">${total}</i> VNĐ</p>`;
+  cellDelete.innerHTML = `<button class="btn btn-danger" onclick="deleteProduct('${id}')">Xóa</button>`;
+  formatMoney();
+}
+
+function displayProductsInBill() {
+  const productList = document.getElementById("product-list");
+  while (productList.rows.length > 1) {
+    productList.deleteRow(1);
+  }
+
+  bill.items.forEach(item => {
+    displayProductInBill(item.id, item.name, item.price, item.quantity, item.total);
+  });
+  totalElement= document.getElementById('total')
+  totalElement.innerHTML = `Tổng Tiền:<i class='money'>${bill.total}</i> VNĐ`;
+  formatMoney();
+}
+
+    document.body.addEventListener('click', event => {
+    if (event.target.classList.contains('add')) {
+        const productName = decodeURIComponent(event.target.dataset.name);
+        const productPrice = parseFloat(event.target.dataset.price);
+        const id =event.target.dataset.id;
+        insert_bill(id,productName,productPrice,1);
+        displayProductsInBill();
+        }
+  });
+    document.body.addEventListener('input', event => {
+    if (event.target.classList.contains('quantity-input')) {
+        var id_price= event.target.dataset.id;
+        var sl= event.target.value;
+         setTimeout(() => {
+            changeQuantity(id_price, sl);
+        }, 500);
+    }
+});
+function processPayment(){
+    if(bill.total==0){
+        alert("Bạn chưa nhập sản phẩm nào");
+        return
+    }else{
+        window.location.href = '/paying/checkNp?bill=' + encodeURIComponent(JSON.stringify(bill));
+    } 
+    
+}
+    </script>  

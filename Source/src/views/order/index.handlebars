@@ -1,0 +1,78 @@
+<div class="container my-3">
+  <h4 class="my-3 text-primary text-center text-uppercase">Danh sách đơn hàng </h4>
+  {{#if flash}}
+  <div class="alert alert-{{flash.type}} alert-dismissible fade show" role="alert">
+    {{flash.message}}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  {{/if}}
+  <table class="table table-striped border" id="dataTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Customer Name</th>
+        <th>Total Amount</th>
+        <th>Number Of Product</th>
+        <th>Purchase Date</th>
+        <th class="text-center">Thao tác</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each orders}}
+      <tr>
+        <td>{{this._id}}</td>
+        <td>{{this.name_customer}}</td>
+        <td>{{this.totalAmount}}</td>
+        <td>{{this.numberOfproduct}}</td>
+        <td>{{this.purchaseDate}}</td>
+        <td class="text-center">
+          <a href="/dashboard/orders/order-details/{{this._id}}" class="btn btn-sm btn-outline-success">Xem chi tiết</a>
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</div>
+
+<script>
+  $("#btn-resend-login-mail").click((evt) => {
+    fetch("http://localhost:8000/users/resend-login-mail", {
+      method: "put",
+      body: JSON.stringify({
+        id: evt.target.dataset.userId
+      }), headers: {
+        "Content-type": "application/json"
+      }
+    }).then(res => res.json())
+      .then(json => {
+        if (json.status === "success") {
+          
+        }
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  })
+
+  const btnChangeStatus = document.getElementById("btn-change-status");
+  btnChangeStatus.addEventListener("click", (evt) => {
+    fetch("http://localhost:8000/users/change-status", {
+      method: "put",
+      body: JSON.stringify({
+        id: evt.target.dataset.userId
+      }), headers: {
+        "Content-type": "application/json"
+      }
+    }).then(res => res.json())
+      .then(json => {
+        if (json.status === "success") {
+          let tr = $("#btn-change-status").closest( "tr" )
+          let tds = tr.find("td")
+          tds[4].innerHTML = tds[4].innerHTML == "inactive" ? "active" : "inactive"
+        }
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  })
+</script>

@@ -1,0 +1,188 @@
+<script src="https://unpkg.com/easyinvoice/dist/easyinvoice.min.js"></script>
+<head>
+    <title>Chi tiết đơn hàng</title>
+</head>
+<style>
+    hr {
+        border-top: 2px solid #bbb;
+    }
+
+    .success {
+        color: #fff;
+        background-color: #5dac46;
+        padding: 0 12px;
+        font-size: .75rem;
+        border-radius: 0.75rem;
+        background-color: rgb(93, 172, 70);
+    }
+
+    .info_customer_1 {
+        padding: 0 100px;
+    }
+
+    .info_customer {
+        height: 40px;
+    }
+</style>
+
+<body>
+     <div class="alert alert-success" id="flash-message-2" style="display: none;position: fixed;top: 50px;right: 10px;"></div>
+    <div class="container-fluid">
+        <div class="btn btn-secondary bg-primary" onclick="history.back()" style="cursor: pointer;">Quay lại</div>
+        <div class="row">
+            <div class="col-md-4 border" id="customers">
+                <div class="card" class="w-100">
+                    <img class="card-img-top" src="https://www.w3schools.com/bootstrap4/img_avatar1.png"
+                        alt="Card image">
+                    <div class="card-body">
+                        <h4 class="card-title text-primary">{{customer.name}}</h4>
+                        <p class="card-text">Số điện thoại: <strong>{{customer.phone}}</strong></p>
+                        <p class="card-text">Địa chỉ: <strong>{{customer.address}}</strong></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8 border">
+                <h2>Chi tiết đơn hàng <i style="color: #5dac46;">#{{orders._id}}</i></h2>
+                <hr>
+                <table>
+                    <tr class="info_customer">
+                        <th>
+                            Mã đơn hàng:
+                        </th>
+                        <td class="info_customer_1">
+                            {{orders._id}}
+                        </td>
+                    </tr>
+                    <tr class="info_customer">
+                        <th>
+                            Tổng số sản phẩm:
+                        </th>
+                        <td class="info_customer_1">
+                            {{orders.numberOfproduct}}
+                        </td>
+                    </tr>
+                    <tr class="info_customer">
+                        <th>
+                            Tổng tiền hóa đơn:
+                        </th>
+                        <td class="info_customer_1">
+                            <i class="money">{{orders.totalAmount}}</i> VNĐ
+                        </td>
+                    </tr>
+                    <tr class="info_customer">
+                        <th>
+                            Số tiền khách đưa:
+                        </th>
+                        <td class="info_customer_1">
+                            <i class="money">{{orders.amountPaid}}</i> VNĐ
+                        </td>
+                    </tr>
+                    <tr class="info_customer">
+                        <th>
+                            Tiền thừa:
+                        </th>
+                        <td class="info_customer_1">
+                            <i class="money">{{orders.refundAmount}}</i> VNĐ
+                        </td>
+                    </tr>
+                    <tr class="info_customer">
+                        <th>
+                            Ngày mua hàng:
+                        </th>
+                        <td class="info_customer_1">
+                            {{orders.purchaseDate}}
+                        </td>
+                    </tr>
+                    <tr class="info_customer">
+                        <th>
+                            Trạng thái:
+                        </th>
+                        <td class="info_customer_1">
+                            <i class="success">Nhận hàng thành công</i>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><button id="print" type="button" class="btn btn-primary" onclick="saveBills()">In hóa đơn</button></td>
+
+                    </tr>
+                </table>
+                <hr>
+                <h2>Danh sách sản phẩm</h2>
+                <div class="col-md-8 border">
+                    <table class="table table-hover table-image" style="width:150%">
+                        <thead>
+                            <tr>
+                                <th scope="col">Ảnh </th>
+                                <th scope="col">Tên sản phẩm</th>
+                                <th scope="col">Giá sản phẩm</th>
+                                <th scope="col">Số lượng</th>
+                                <th scope="col">Tổng tiền sản phẩm</th>
+                            </tr>
+                        </thead>
+                        <tbody id="searchResults">
+                            {{#each orders.products}}
+                            <tr class="align-middle">
+                                <td style="width:8%;"><img src={{imgSrc}} class="img-thumbnail rounded" alt=""></td>
+                                <th><a href='../../products/{{this.id}}' style="text-decoration: none;">{{name}} </a>
+                                </th>
+                                <td><i class="money">{{price}}</i> VNĐ</td>
+                                <td scope="row" style="width: 15%; text-align:center; ">{{quantity}}</td>
+                                <td scope="row" style="width: 15%; text-align:center; ">
+                                    <i class="money">{{total}}</i> VNĐ
+                                </td>
+                            </tr>
+                            {{/each}}
+                        <tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+</body>
+<script>
+      let detail_bill={
+        phone:{{customer.phone}},
+        name_customer: '{{customer.name}}',
+        totalAmount:{{orders.totalAmount}},
+        amountPaid:{{orders.amountPaid}},
+        refundAmount:{{orders.refundAmount}},
+        numberOfproduct:{{orders.numberOfproduct}},
+        products:[],
+  }
+{{#each orders.products}}
+  detail_bill.products.push({ id:`{{id}}`, name:`{{name}}`, price:{{price}}, quantity:{{quantity}},imgSrc:`{{imgSrc}}`, total:{{total}},});
+{{/each}}
+    function printBills(){
+    window.location.href='/paying/save-order'
+    }
+    function saveBills(){
+    fetch('/paying/print-order', {
+                method: 'post',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ detailBill: detail_bill })
+            })
+            .then(response => response.json())
+            .then(data=>{
+                const flashMessage2 = document.getElementById('flash-message-2');
+                flashMessage2.innerHTML="Đang in hóa đơn"
+                flashMessage2.style.display='block';
+                easyinvoice.createInvoice(data, function (result) {
+                        easyinvoice.download('myInvoice.pdf', result.pdf);
+                    });
+                const duration = 1000; 
+                setTimeout(() => {
+                    flashMessage2.style.display = 'none';
+                }, duration);
+        })
+    }
+    function formatMoney() {
+        const moneyElements = document.querySelectorAll('.money');
+        moneyElements.forEach(element => {
+            const text = element.textContent;
+            const formattedText = text.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            element.textContent = formattedText;
+        });
+    }
+    formatMoney();
+</script>

@@ -1,0 +1,48 @@
+<div class="container mt-4">
+    {{#with user}}
+    <div class='card'>
+        <img id="avatar-img" src='{{avatar}}' alt='{{fullName}}' style="margin: 20px;" />
+        <h1>{{fullName}}</h1>
+        <p class='title'>Role: {{role}}</p>
+    </div>
+    {{/with}}
+
+    <form class="text-center mt-5">
+        <label for="">Choose avatar to update</label>
+        <input class="form-control" type='file' name='imgItem' id='avatar' />
+        <button class="btn btn-primary text-center mt-2" id="btn-submit">Submit</button>
+    </form>
+</div>
+<script>
+    $("#btn-submit").click(evt => {
+        evt.preventDefault();
+        const formData = new FormData();
+        formData.append("imgItem", $("#avatar")[0].files[0]);
+        fetch("/users/update-avatar", {
+                method: "POST",
+                body: formData
+            })
+            .then(res => res.json())
+            .then(json => {
+                if (json.status == "success") {
+                    $("#avatar-img").attr("src", json.img);
+                }
+            })
+            .catch(err => console.log(err));
+    })
+</script>
+
+
+<style>
+    .card {
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+        max-width: 300px;
+        margin: auto;
+        text-align: center;
+    }
+
+    .title {
+        color: grey;
+        font-size: 18px;
+    }
+</style>

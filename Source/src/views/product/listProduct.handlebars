@@ -1,0 +1,36 @@
+
+    <div class="card shadow mb-4"> 
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Danh Sách sản phẩm</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive" style="width: 100%;">
+                <table class="table table" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Mã sản phẩm</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Loại</th>
+                            <th>Giá</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {{#each products}}
+                        <tr>
+                            <td><img src={{imgSrc}} alt="" style="width: 10vh;"></td>
+                            <td>
+                                <a href="/products/{{_id}}" style="text-decoration: none;">
+                                    {{name}}
+                                </a>
+                            </td>
+                            <td>{{cate}}</td>
+                            <td>{{priceFormat price}}</td>
+                           
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>

@@ -1,0 +1,34 @@
+<div class="container my-3">
+  <h4 class="my-2 text-primary text-center text-uppercase">Danh sách khách hàng</h4>
+  <p>Chọn một khách hàng để xem chi tiết</p>
+  {{#if flash}}
+  <div class="alert alert-{{flash.type}} alert-dismissible fade show" role="alert">
+    {{flash.message}}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  {{/if}}
+  <table class="table table-striped border" id="dataTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Address</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each customers}}
+      <tr>
+        <td>{{this._id}}</td>
+        <td><a href="/dashboard/customers/{{this.phone}}">{{this.name}}</a></td>
+        <td>{{this.phone}}</td>
+        <td>{{this.address}}</td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</div>
+
+<script>
+  
+</script>
