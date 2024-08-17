@@ -43,11 +43,3 @@ docker run --name nodejs-final-project -d -p 8000:8000 nodejs-final-project:1.0
 ### Setup database:
 - Database đã được setup sẵn trên MongoDB Atlas (Cloud Database) 
 - Ứng dụng kết nối với database thông qua connection string ở trên
-
-## Tác giả và đóng góp
-
-Mã nguồn được tạo bởi:
-
--   [Trần Phước Sang - 52100303]()
--   [Lê Khắc Thanh Tùng - 52100943]()
--   [Nguyễn Thanh Tú - 52100349]()
